@@ -1,101 +1,61 @@
-# financial-customer-analysis-sql
+# 💳 Fintech Customer Behavior & Lifecycle Analytics
 
-This project explores **customer behavior** and **business insights** using SQL. It answers key business questions around **customer value, engagement, inactivity, and segmentation** using data from users, plans, and transactions tables.
-
----
-
-## Dataset Overview
-
-The project uses four main tables:
-
-- **`users_customuser`** → Customer information  
-- **`plans_plan`** → Savings and investment plans  
-- **`savings_savingsaccount`** → Transaction records
-- **`savings_savingsaccount`** → Withdrawal records 
-
-**Key Relationships**  
-- `owner_id` → Foreign key to `users_customuser.id`  
-- `plan_id` → Foreign key to `plans_plan.id`  
-
-**Notes**  
-- Savings plans → `is_regular_savings = 1`  
-- Investment plans → `is_a_fund = 1`  
-- `confirmed_amount` → Deposit/inflow  
-- `amount_withdrawn` → Withdrawal  
-- Monetary values are stored in **Kobo** (converted to Naira where needed)  
+## Overview
+This project explores customer behavior and business insights using advanced SQL. It addresses key business challenges around customer value, cross-selling, engagement patterns, account inactivity, and lifetime value estimation using transactional and demographic data from a fintech ecosystem.
 
 ---
 
-## Project Questions & Approaches
+## Dataset Schema & Architecture
 
-### 1️. High-Value Customers with Multiple Products
-**Objective:**  
-Identify customers who have **both savings and investment plans**, sorted by **total deposits**.
+The analysis integrates four core relational tables:
 
-**Approach:**  
-- Count savings and investment plans per customer.  
-- Calculate **total deposits** per customer.  
-- Join these results with the users table.  
-- Filter for customers with **at least one savings and one investment plan**.
+- **`users_customuser`** → Customer demographic and contact information  
+- **`plans_plan`** → Records of savings and investment plans created by customers  
+- **`savings_savingsaccount`** → Deposit and inflow transaction records
+- **`savings_savingsaccount`** *(Withdrawals view/table)* → Records of withdrawal transactions  
 
----
-
-### 2️. Transaction Frequency Analysis
-**Objective:**  
-Segment customers based on how frequently they transact **per month**.
-
-**Approach:**  
-- Calculate **monthly transactions** per customer.  
-- Compute **average monthly transactions**.  
-- Categorize customers into:  
-  - **High Frequency:** ≥10 transactions/month  
-  - **Medium Frequency:** 3–9 transactions/month  
-  - **Low Frequency:** ≤2 transactions/month  
-- Aggregate results by frequency category.
+### Key Relationships & Data Notes
+- **`owner_id`** → Foreign key linking to `users_customuser.id`  
+- **`plan_id`** → Foreign key linking to `plans_plan.id`  
+- **Product Categorization:** 
+  - Savings plans → `is_regular_savings = 1`  
+  - Investment plans → `is_a_fund = 1`  
+- **Transaction Fields:** `confirmed_amount` (deposits/inflows) and `amount_withdrawn` (withdrawals).  
+- **Currency Convention:** Monetary values are natively stored in **Kobo** and normalized to Naira where required.  
 
 ---
 
-### 3️. Account Inactivity Alert
-**Objective:**  
-Flag accounts with **no transactions in the last 365 days**.
+## Key Business Findings & SQL Methodology
 
-**Approach:**  
-- Define **account types** (savings vs. investment).  
-- Determine a **reference date** (latest transaction date).  
-- Use **LEFT JOIN** to include even accounts with **no transactions**.  
-- Calculate inactivity days:  
-  - If transactions exist → difference between last transaction and reference date  
-  - If no transactions → difference between start date and reference date  
-- Filter accounts **inactive for over 1 year**.
+### 1. Identifying Cross-Sell Opportunities (High-Value Customers)
+* **The Business Problem:** Marketing wanted to identify customers holding both savings and investment products to target for cross-selling.
+* **The Solution:** Built a multi-level CTE architecture joining user demographics with aggregated plan counts and deposit totals, filtering for active multi-product holders sorted by total capital inflow.
 
----
+### 2. Transaction Frequency Segmentation
+* **The Business Problem:** Finance needed to segment user engagement levels (High, Medium, Low) based on monthly transaction volume to track platform stickiness.
+* **The Solution:** Implemented nested CTEs to calculate monthly transaction averages per user, categorized via conditional `CASE` logic (High: ≥ 10, Medium: 3–9, Low: ≤ 2), and aggregated total customer distribution per tier.
 
-### 4️. Customer Lifetime Value (CLV) Estimation
-**Objective:**  
-Estimate **customer value** based on transaction volume and account tenure.
+### 3. Dormant Account & Inactivity Alert System
+* **The Business Problem:** Operations wanted to flag active savings or investment accounts experiencing no inflows for over 365 days to support risk and retention teams.
+* **The Solution:** Standardized account types and established a dynamic baseline reference date using the latest system transaction. Employed a `LEFT JOIN` structure with conditional fallback math to calculate exact dormancy days from either the last transaction or the account start date.
 
-**Approach:**  
-- Join users with transaction data from savings table.  
-- Calculate:  
-  - **Tenure:** months since signup  
-  - **Total transaction value**  
-- Apply CLV formula: CLV = (Total Transactions / Tenure) × 12 × 0.001
-- Use `NULLIF` to avoid division by zero.
+### 4. Customer Lifetime Value (CLV) Estimation Model
+* **The Business Problem:** Marketing wanted to estimate forward-looking customer value based on tenure and transaction volume to optimize acquisition spending.
+* **The Solution:** Integrated user profile data with transaction summaries to calculate tenure in months and total transaction value. Applied the predictive formula $\text{CLV} = (\frac{\text{Total Transactions}}{\text{Tenure}}) \times 12 \times 0.001$, embedding `NULLIF` guards to prevent division-by-zero errors for new accounts.
 
 ---
 
-##  Key SQL Concepts Used
+## Technical Skills & SQL Concepts Demonstrated
 
-- **Joins:** INNER JOIN, LEFT JOIN, CROSS JOIN  
-- **Aggregations:** SUM, COUNT, AVG, MAX  
-- **Conditional Logic:** CASE WHEN  
-- **CTEs:** For structuring complex queries  
-- **Subqueries:** For modular data preparation  
-- **Date Functions:** DATEDIFF, TIMESTAMPDIFF
+- **Advanced Query Structures:** Common Table Expressions (CTEs) for multi-step data pipelines and modular subqueries.
+- **Complex Joins:** Strategic use of `INNER JOIN`, `LEFT JOIN`, and `CROSS JOIN` for reference-date evaluation.
+- **Aggregations & Grouping:** Advanced utilization of `SUM`, `COUNT`, `AVG`, and `MAX`.
+- **Conditional Expressions:** Dynamic categorization using `CASE WHEN` logic.
+- **Date & Numeric Functions:** `DATEDIFF`, `TIMESTAMPDIFF`, `NULLIF`, and currency conversion formatting.
 
 ---
 
 ## Final Takeaways
 
-- Broke down complex business problems into **step-by-step SQL logic**.  
-- Combined **CTEs** for readability and **subqueries** for modular joins.  
+- Successfully translated ambiguous business requirements into clean, modular, and optimized SQL pipelines.
+- Demonstrated strong foundational ability in structuring complex multi-table joins and handling data edge-cases cleanly.
