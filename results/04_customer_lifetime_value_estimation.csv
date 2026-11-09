@@ -1,0 +1,6 @@
+customer_id,name,tenure_months,total_transactions,estimated_clv
+1001,John Doe,24,120,600.00
+1002,Jane Smith,36,210,525.00
+1003,Michael Brown,18,95,410.50
+1004,Emily Davis,12,60,300.00
+1005,David Wilson,30,140,280.00

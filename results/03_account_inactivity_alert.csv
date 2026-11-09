@@ -1,0 +1,5 @@
+plan_id,owner_id,type,last_transaction_date,inactivity_days
+1001,305,Savings,2023-08-10,412
+1002,412,Investment,2023-06-15,468
+1003,589,Savings,2023-09-01,390
+1004,671,Investment,2023-05-20,494

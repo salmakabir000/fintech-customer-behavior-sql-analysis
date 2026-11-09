@@ -1,0 +1,4 @@
+frequency_category,customer_count,avg_transactions_per_month
+High Frequency,250,15.2
+Medium Frequency,1200,5.5
+Low Frequency,3400,1.2
