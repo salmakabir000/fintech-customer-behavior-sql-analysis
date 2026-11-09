@@ -3,8 +3,8 @@
 ## Overview
 This project explores customer behavior and business insights using advanced SQL. It addresses key business challenges around customer value, cross-selling, engagement patterns, account inactivity, and lifetime value estimation using transactional and demographic data from a fintech ecosystem.
 
-> *Note: Sample output tables below contain synthetic illustrative data generated to demonstrate query behavior while ensuring complete privacy compliance (NDPR/GDPR).*
-
+> *Note: Sample output tables contain synthetic illustrative data generated to demonstrate query behavior while ensuring complete privacy compliance (NDPR/GDPR).*
+- `results/`: Contains synthetic CSV output files matching production query schemas.
 ---
 
 ## Dataset Schema & Architecture
