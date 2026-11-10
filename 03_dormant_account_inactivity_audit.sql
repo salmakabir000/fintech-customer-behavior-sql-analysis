@@ -13,7 +13,7 @@ with accounts as(
 			else 'neither'
 		end as account_type
 	from plans_plan
-	-- where is_a_fund =1 or is_regular_savings =1
+	where is_a_fund =1 or is_regular_savings =1
 ),
 reference_date as (
 	select max(transaction_date) as max_date 
