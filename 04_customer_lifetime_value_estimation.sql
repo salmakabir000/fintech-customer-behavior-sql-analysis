@@ -1,29 +1,54 @@
--- For each customer, assuming the profit_per_transaction is 0.1% of the transaction value, 
--- calculate:
--- Account tenure (months since signup)
--- Total transactions
--- Estimated CLV (Assume: CLV = (total_transactions / tenure) * 12 * avg_profit_per_transaction)
--- Order by estimated CLV from highest to lowest
+-- Q4: Customer Lifetime Value (CLV) Estimation
+-- Calculate customer tenure, transaction count and estimated annualized CLV.
+-- Monetary values are stored in Kobo and converted to Naira.
 
 with reference_date as (
-	select max(transaction_date) as max_date 
-	from savings_savingsaccount)
+    select MAX(transaction_date) as max_date
+    from savings_savingsaccount
+),
 
-select 
-	u.id as customer_id,
-	concat(u.first_name, ' ', u.last_name) as name,
-    -- u.date_joined as date_joined,
-    timestampdiff(month, u.date_joined, r.max_date) as tenure_months,
-    sum(s.confirmed_amount) as total_transactions,
-    format((sum(s.confirmed_amount)/
-    nullif(timestampdiff(month, u.date_joined, r.max_date), 0)
-    * 12 * 0.001),2) as estimated_clv
-from users_customuser u
-left join savings_savingsaccount s
-	on u.id = s.owner_id
-cross join reference_date r
-group by u.id, u.first_name, u.last_name, r.max_date
-order by (sum(s.confirmed_amount)/
-    nullif(timestampdiff(month, u.date_joined, r.max_date), 0)
-    * 12 * 0.001) desc
-;
+customer_metrics as (
+    select
+        u.id as customer_id,
+        CONCAT(u.first_name, ' ', u.last_name) AS name,
+
+        -- Calculate customer tenure in complete months
+        TIMESTAMPDIFF(
+            month,
+            u.date_joined,
+            r.max_date
+        ) as tenure_months,
+
+        -- Count deposit transactions
+        count(s.id) as total_transactions,
+
+        -- Calculate total deposit value and convert Kobo to Naira
+        COALESCE(SUM(s.confirmed_amount), 0) / 100
+            as total_transaction_value
+
+    from users_customuser u
+    cross join reference_date r
+    left join savings_savingsaccount s
+        on u.id = s.owner_id
+    group by
+        u.id,
+        u.first_name,
+        u.last_name,
+        u.date_joined,
+        r.max_date
+)
+
+select
+    customer_id,
+    name,
+    tenure_months,
+    total_transactions,
+    -- Annualized estimated profit at 0.1% of transaction value
+    ROUND(
+        (total_transaction_value / NULLIF(tenure_months, 0))
+        * 12 * 0.001,
+        2
+    ) as estimated_clv
+from customer_metrics
+order by estimated_clv desc;
+
