@@ -57,7 +57,60 @@ The analysis integrates four core relational tables:
 
 ---
 
+## 📊 Business Intelligence & Executive Dashboard
+
+To translate raw analytical outputs into executive-level visual storytelling, an interactive 4-quadrant Power BI dashboard was engineered utilizing an explicit DAX measure architecture and custom visual hierarchy.
+
+![Fintech Executive Dashboard](assets/dashboard_overview.png)
+
+### Key Dashboard Quadrants & Narrative Flow
+1. **Executive KPI Banner (Top Layer):** Delivers at-a-glance portfolio scale including active cohort volume, cross-sell adoption rate, churn exposure, and average projected CLV.
+2. **Top Cross-Sell Customers by Total Deposits (Top-Left):** Ranks top-tier multi-product users by total deposit volume to highlight key high-net-worth accounts.
+3. **Customer Distribution by Engagement Tier (Top-Right):** Segmented donut breakdown displaying user distribution across Low, Medium, and High monthly transaction frequencies.
+4. **Customer Lifetime Value (CLV) vs. Tenure (Bottom-Left):** Dual-axis visual evaluating projected account value against user longevity to guide retention budgeting.
+5. **Operational Risk: Accounts Inactive > 365 Days (Bottom-Right):** Line-item audit table highlighting dormant investment and savings plans for immediate re-engagement.
+
+---
+
+## 📐 Data Modeling & DAX Architecture
+
+Moving away from default implicit aggregations, core metrics are governed via a dedicated `_Measures` container using explicit DAX calculations:
+
+### 1. Total Active Cohort
+Calculates the total count of unique active customers across the portfolio.
+```dax
+Total Active Cohort = 
+DISTINCTCOUNT('01_high_value_cross_sell_customers'[owner_id])
+```
+### 2. Cross-Sell Penetration (%)
+Determines the percentage of users actively holding both Savings and Investment plans relative to the overall base.
+```dax
+Cross-Sell Penetration = 
+DIVIDE(
+    CALCULATE(
+        DISTINCTCOUNT('01_high_value_cross_sell_customers'[owner_id]),
+        '01_high_value_cross_sell_customers'[savings_count] > 0 && 
+        '01_high_value_cross_sell_customers'[investment_count] > 0
+    ),
+    DISTINCTCOUNT('01_high_value_cross_sell_customers'[owner_id]),
+    0
+)
+```
+### 3. Flagged Inactive Accounts
+Tracks the exact volume of high-risk accounts exceeding 365 days of transaction inactivity.
+```dax
+Flagged Inactive Accounts = 
+COUNTROWS('03_account_inactivity_alert')
+```
+### 4. Average Projected CLV
+Generates the baseline expected lifetime value across modeled cohorts.
+```dax
+Average Projected CLV = 
+AVERAGE('04_customer_lifetime_value_estimation'[estimated_clv])
+```
+
 ## Final Takeaways
 
-- Successfully translated ambiguous business requirements into clean, modular, and optimized SQL pipelines.
-- Demonstrated strong foundational ability in structuring complex multi-table joins and handling data edge-cases cleanly.
+- Successfully translated business requirements into clean, modular, and optimized SQL pipelines.
+- Demonstrated strong foundational ability in structuring complex multi-table joins and handling data cleanly.
+- Implemented  DAX calculations and visualization techniques in Power BI to deliver actionable cohort insights.
