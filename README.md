@@ -14,7 +14,7 @@ The analysis integrates four core relational tables:
 - **`users_customuser`** → Customer demographic and contact information  
 - **`plans_plan`** → Records of savings and investment plans created by customers  
 - **`savings_savingsaccount`** → Deposit and inflow transaction records
-- **`savings_savingsaccount`** *(Withdrawals view/table)* → Records of withdrawal transactions  
+- **`withdrawals_withdrawal`** *(Withdrawals view/table)* → Records of withdrawal transactions  
 
 ### Key Relationships & Data Notes
 - **`owner_id`** → Foreign key linking to `users_customuser.id`  
