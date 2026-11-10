@@ -158,7 +158,7 @@ The estimated value provides a simplified basis for comparing customer segments 
 
 An interactive Power BI dashboard was developed to translate the SQL analytical outputs into a visual business intelligence report.
 
-[View Dashboard Screenshot](assets/dashboard_overview.png)
+![Fintech Executive Dashboard](assets/dashboard_overview.png)
 
 ### Dashboard Components
 
