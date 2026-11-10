@@ -26,8 +26,8 @@ categorized as (
 		owner_id, 
         avg_monthly,
         case
-			when avg_monthly <= 2 then 'low frequency'
-            when avg_monthly > 2 and avg_monthly <= 9 then 'Medium Frequency'
+			when avg_monthly < 2 then 'low frequency'
+            when avg_monthly between 3 and 9 then 'medium frequency'
             else 'high frequency'
 		end as frequency
 	from avg_table
